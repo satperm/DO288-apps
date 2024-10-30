@@ -4,13 +4,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email():
-    recipient = os.environ.get("EMAIL_RECIPIENT", "default@example.com")
-    subject = "Test Email"
-    body = "This is a test email."
+    recipient = "recipient@example.com"  # Change to your localhost email
+    subject = "Test Email from Container"
+    body = "This is a test email sent from an OpenShift container."
 
     # Set up the email
     msg = MIMEMultipart()
-    msg['From'] = 'leonidsokurov@localhost'  # Replace with your email
+    msg['From'] = 'your_email@example.com'  # Replace with your email
     msg['To'] = recipient
     msg['Subject'] = subject
 
@@ -18,10 +18,12 @@ def send_email():
     msg.attach(MIMEText(body, 'plain'))
 
     try:
+        # Use your macOS IP address instead of localhost
+        smtp_server = "192.168.1.47"  # Replace with your macOS IP address
+        smtp_port = 25  # Default port for SMTP
+
         # Connect to the SMTP server
-        with smtplib.SMTP('smtp.example.com', 587) as server:  # Replace with your SMTP server and port
-            server.starttls()  # Upgrade to a secure connection
-            server.login('your_email@example.com', 'your_password')  # Replace with your login credentials
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.send_message(msg)
 
         print("Email sent successfully!")
