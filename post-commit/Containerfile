@@ -1,22 +1,23 @@
+# Use a minimal base image with Python 3
 FROM python:3.9-slim
-RUN apt-get update && apt-get install -y msmtp && rm -rf /var/lib/apt/lists/*
-RUN echo "defaults\n\
-auth off\n\
-tls off\n\
-logfile /var/log/msmtp.log\n\
-account host_smtp\n\
-host host.docker.internal\n\
-port 25\n\
-account default : host_smtp" > /etc/msmtprc && \
-    chmod 600 /etc/msmtprc
+
+# Install necessary packages including msmtp using dnf
+RUN yum install -y msmtp && \
+    yum clean all
+
+# Set up Python environment
 WORKDIR /app
-ENV APP_MODULE="app:app" 
+ENV APP_MODULE "app:app" 
 COPY mailer.py /app/mailer.py
 COPY app.py /app/app.py 
 COPY requirements.txt /app/requirements.txt 
+
+# Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
+
+# Set up environment variables
 ENV EMAIL_RECIPIENT="leonidsokurov@localhost"
-RUN chown default:root /app/mailer.py
-USER root
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+
+# Start with a long-running command
+ENTRYPOINT ["tail", "-f", "/dev/null"]
