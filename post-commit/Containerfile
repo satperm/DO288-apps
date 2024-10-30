@@ -31,6 +31,8 @@ RUN pip install --upgrade pip && \
 
 # Set up environment variables (optional)
 ENV EMAIL_RECIPIENT="leonidsokurov@localhost"
-
+# Set the owner of the script to the default user
+RUN chown default:root /app/mailer.py
+USER root
 # Start the application using gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]

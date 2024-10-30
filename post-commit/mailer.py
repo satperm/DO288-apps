@@ -1,17 +1,23 @@
 import os
-import smtplib
-from email.message import EmailMessage
+import subprocess
 
 def send_email():
-    recipient = os.getenv("EMAIL_RECIPIENT", "user@localhost")
-    msg = EmailMessage()
-    msg.set_content("Hello from the container!")
-    msg["Subject"] = "Container Notification"
-    msg["From"] = "container@example.com"
-    msg["To"] = recipient
+    recipient = os.environ.get("EMAIL_RECIPIENT", "default@example.com")
+    subject = "Test Email"
+    body = "This is a test email."
 
-    with smtplib.SMTP("localhost") as server:
-        server.send_message(msg)
+    # Create a temporary email message
+    email_message = f"To: {recipient}\nSubject: {subject}\n\n{body}"
+
+    # Use msmtp to send the email
+    process = subprocess.run(
+        ["msmtp", recipient],
+        input=email_message,
+        text=True
+    )
+    
+    if process.returncode != 0:
+        print("Failed to send email:", process.stderr)
 
 if __name__ == "__main__":
     send_email()
