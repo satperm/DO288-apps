@@ -25,7 +25,9 @@ COPY mailer.py /app/mailer.py
 COPY requirements.txt /app/requirements.txt 
 
 # Install any required Python packages for the script
-RUN pip install -r requirements.txt
+
+RUN pip install --upgrade pip && \
+ pip install -r requirements.txt
 
 # Set up environment variables (optional)
 ENV EMAIL_RECIPIENT="leonidsokurov@localhost"
