@@ -1,0 +1,34 @@
+# Use a minimal base image with Python 3
+FROM python:3.9-slim
+
+# Install msmtp for email sending
+RUN apt-get update && \
+    apt-get install -y msmtp && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure msmtp with host as SMTP relay
+RUN echo "defaults\n\
+auth off\n\
+tls off\n\
+logfile /var/log/msmtp.log\n\
+account host_smtp\n\
+host host.docker.internal\n\
+port 25\n\
+account default : host_smtp" > /etc/msmtprc && \
+    chmod 600 /etc/msmtprc
+
+# Set up Python environment
+WORKDIR /app
+
+# Copy mailer.py script
+COPY mailer.py /app/mailer.py
+COPY requirements.txt /app/requirements.txt 
+
+# Install any required Python packages for the script
+RUN pip install -r requirements.txt
+
+# Set up environment variables (optional)
+ENV EMAIL_RECIPIENT="leonidsokurov@localhost"
+
+# The container will start without running any commands
+ENTRYPOINT ["tail", "-f", "/dev/null"]
