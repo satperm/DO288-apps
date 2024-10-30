@@ -1,23 +1,32 @@
 import os
-import subprocess
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def send_email():
     recipient = os.environ.get("EMAIL_RECIPIENT", "default@example.com")
     subject = "Test Email"
     body = "This is a test email."
 
-    # Create a temporary email message
-    email_message = f"To: {recipient}\nSubject: {subject}\n\n{body}"
+    # Set up the email
+    msg = MIMEMultipart()
+    msg['From'] = 'your_email@example.com'  # Replace with your email
+    msg['To'] = recipient
+    msg['Subject'] = subject
 
-    # Use msmtp to send the email
-    process = subprocess.run(
-        ["msmtp", recipient],
-        input=email_message,
-        text=True
-    )
-    
-    if process.returncode != 0:
-        print("Failed to send email:", process.stderr)
+    # Attach the email body
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Connect to the SMTP server
+        with smtplib.SMTP('smtp.example.com', 587) as server:  # Replace with your SMTP server and port
+            server.starttls()  # Upgrade to a secure connection
+            server.login('your_email@example.com', 'your_password')  # Replace with your login credentials
+            server.send_message(msg)
+
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
 if __name__ == "__main__":
     send_email()
