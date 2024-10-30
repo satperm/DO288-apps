@@ -1,5 +1,4 @@
 python-dotenv
 Flask
 gunicorn
-smtplib
 email
