@@ -19,18 +19,18 @@ account default : host_smtp" > /etc/msmtprc && \
 
 # Set up Python environment
 WORKDIR /app
-
+ENV APP_MODULE="app:app" 
 # Copy mailer.py script
 COPY mailer.py /app/mailer.py
+COPY app.py /app/app.py 
 COPY requirements.txt /app/requirements.txt 
 
 # Install any required Python packages for the script
-
 RUN pip install --upgrade pip && \
- pip install -r requirements.txt
+    pip install -r requirements.txt
 
 # Set up environment variables (optional)
 ENV EMAIL_RECIPIENT="leonidsokurov@localhost"
 
-# The container will start without running any commands
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# Start the application using gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
