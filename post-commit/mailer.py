@@ -10,7 +10,7 @@ def send_email():
 
     # Set up the email
     msg = MIMEMultipart()
-    msg['From'] = 'your_email@example.com'  # Replace with your email
+    msg['From'] = 'leonidsokurov@localhost'  # Replace with your email
     msg['To'] = recipient
     msg['Subject'] = subject
 
